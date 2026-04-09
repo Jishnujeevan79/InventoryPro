@@ -1,0 +1,492 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orders | InventoryPro</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0b0f1a;
+      --surface: #111827;
+      --surface2: #1a2235;
+      --border: rgba(99,102,241,0.15);
+      --accent: #6366f1;
+      --accent2: #818cf8;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text: #f1f5f9;
+      --muted: #64748b;
+      --sidebar-w: 240px;
+    }
+
+    body.light {
+      --bg: #f0f2f8;
+      --surface: #ffffff;
+      --surface2: #e8ecf7;
+      --border: rgba(99,102,241,0.2);
+      --text: #111827;
+      --muted: #6b7280;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 24px 16px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent2);
+      letter-spacing: -0.5px;
+      padding: 0 8px 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+
+    .logo span { color: var(--text); }
+
+    .status-dot {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--success);
+      padding: 0 8px;
+      margin-bottom: 24px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .status-dot::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      background: var(--success);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .nav-section {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      padding: 0 8px;
+      margin-bottom: 8px;
+      margin-top: 4px;
+    }
+
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+      margin-bottom: 2px;
+    }
+
+    .sidebar a:hover,
+    .sidebar a.active {
+      background: rgba(99,102,241,0.12);
+      color: var(--accent2);
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .sidebar-footer a { color: var(--danger); }
+
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 28px 32px;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .topbar-left h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+    }
+
+    .topbar-left p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .time-chip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent2);
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+    }
+
+    .card-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      color: var(--muted);
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .card-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 30px;
+      font-weight: 700;
+    }
+
+    .card-sub {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .orders-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .panel-head h2 {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th {
+      text-align: left;
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      letter-spacing: 0.8px;
+    }
+
+    td {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    .order-id {
+      color: var(--accent2);
+      font-weight: 700;
+    }
+
+    .customer {
+      font-weight: 600;
+    }
+
+    .subtext {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .pending { background: rgba(245,158,11,0.15); color: #f59e0b; }
+    .shipped { background: rgba(99,102,241,0.15); color: #818cf8; }
+    .delivered { background: rgba(16,185,129,0.15); color: #10b981; }
+    .cancelled { background: rgba(239,68,68,0.15); color: #ef4444; }
+
+    .action-links a {
+      color: var(--accent2);
+      text-decoration: none;
+      margin-right: 12px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    @media (max-width: 1100px) {
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 700px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; padding: 16px; }
+      .stats-row { grid-template-columns: 1fr; }
+      .orders-panel { overflow-x: auto; }
+      table { min-width: 760px; }
+    }
+  </style>
+</head>
+<body id="body">
+
+<div class="sidebar">
+  <div class="logo">Inventory<span>Pro</span></div>
+  <div class="status-dot">System Active</div>
+
+  <div class="nav-section">Main</div>
+  <a href="{% url 'dashboard' %}"><i class="fas fa-gauge-high"></i> Dashboard</a>
+  <a href="{% url 'products' %}"><i class="fas fa-boxes-stacked"></i> Products</a>
+  <a href="{% url 'orders' %}" class="active"><i class="fas fa-cart-shopping"></i> Orders</a>
+
+  <div class="nav-section" style="margin-top:16px;">Settings</div>
+  <a href="{% url 'about' %}"><i class="fas fa-circle-info"></i> About</a>
+  <a href="{% url 'contact' %}"><i class="fas fa-envelope"></i> Contact</a>
+
+  <div class="sidebar-footer">
+    <a href="{% url 'logout' %}"><i class="fas fa-right-from-bracket"></i> Logout</a>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <h1>Orders</h1>
+      <p>Track order flow, fulfillment progress, and customer activity.</p>
+    </div>
+    <div class="topbar-right">
+      <div class="time-chip" id="time">00:00:00</div>
+      <button class="icon-btn" onclick="toggleMode()" id="modeBtn" type="button">
+        <i class="fas fa-moon"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="card">
+      <div class="card-label">Total Orders</div>
+      <div class="card-value">64</div>
+      <div class="card-sub">This month</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Pending</div>
+      <div class="card-value">12</div>
+      <div class="card-sub">Awaiting processing</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Shipped</div>
+      <div class="card-value">28</div>
+      <div class="card-sub">Currently in transit</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Delivered</div>
+      <div class="card-value">24</div>
+      <div class="card-sub">Completed successfully</div>
+    </div>
+  </div>
+
+  <div class="orders-panel">
+    <div class="panel-head">
+      <h2>Recent Orders</h2>
+      <span style="color:var(--muted);font-size:13px;">Last sync 2 min ago</span>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Customer</th>
+          <th>Items</th>
+          <th>Total</th>
+          <th>Status</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="order-id">#1042</td>
+          <td>
+            <div class="customer">Aarav Patel</div>
+            <div class="subtext">aarav@email.com</div>
+          </td>
+          <td>3 items</td>
+          <td>₹4,299</td>
+          <td><span class="status pending">Pending</span></td>
+          <td>06 Apr 2026</td>
+          <td class="action-links"><a href="#">View</a><a href="#">Invoice</a></td>
+        </tr>
+        <tr>
+          <td class="order-id">#1041</td>
+          <td>
+            <div class="customer">Riya Shah</div>
+            <div class="subtext">riya@email.com</div>
+          </td>
+          <td>2 items</td>
+          <td>₹2,199</td>
+          <td><span class="status shipped">Shipped</span></td>
+          <td>06 Apr 2026</td>
+          <td class="action-links"><a href="#">View</a><a href="#">Invoice</a></td>
+        </tr>
+        <tr>
+          <td class="order-id">#1040</td>
+          <td>
+            <div class="customer">Kunal Mehta</div>
+            <div class="subtext">kunal@email.com</div>
+          </td>
+          <td>1 item</td>
+          <td>₹7,499</td>
+          <td><span class="status delivered">Delivered</span></td>
+          <td>05 Apr 2026</td>
+          <td class="action-links"><a href="#">View</a><a href="#">Invoice</a></td>
+        </tr>
+        <tr>
+          <td class="order-id">#1039</td>
+          <td>
+            <div class="customer">Sneha Iyer</div>
+            <div class="subtext">sneha@email.com</div>
+          </td>
+          <td>5 items</td>
+          <td>₹8,999</td>
+          <td><span class="status delivered">Delivered</span></td>
+          <td>05 Apr 2026</td>
+          <td class="action-links"><a href="#">View</a><a href="#">Invoice</a></td>
+        </tr>
+        <tr>
+          <td class="order-id">#1038</td>
+          <td>
+            <div class="customer">Neel Joshi</div>
+            <div class="subtext">neel@email.com</div>
+          </td>
+          <td>2 items</td>
+          <td>₹1,398</td>
+          <td><span class="status pending">Pending</span></td>
+          <td>04 Apr 2026</td>
+          <td class="action-links"><a href="#">View</a><a href="#">Invoice</a></td>
+        </tr>
+        <tr>
+          <td class="order-id">#1037</td>
+          <td>
+            <div class="customer">Pooja Nair</div>
+            <div class="subtext">pooja@email.com</div>
+          </td>
+          <td>1 item</td>
+          <td>₹899</td>
+          <td><span class="status cancelled">Cancelled</span></td>
+          <td>04 Apr 2026</td>
+          <td class="action-links"><a href="#">View</a><a href="#">Invoice</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  function updateTime() {
+    const now = new Date();
+    document.getElementById('time').innerText = now.toLocaleTimeString();
+  }
+  setInterval(updateTime, 1000);
+  updateTime();
+
+  let isDark = true;
+  function toggleMode() {
+    isDark = !isDark;
+    document.getElementById('body').classList.toggle('light', !isDark);
+    document.querySelector('#modeBtn i').className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,789 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | InventoryPro</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #0b0f1a;
+      --surface: #111827;
+      --surface2: #1a2235;
+      --border: rgba(99,102,241,0.15);
+      --accent: #6366f1;
+      --accent2: #818cf8;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text: #f1f5f9;
+      --muted: #64748b;
+      --sidebar-w: 240px;
+    }
+
+    body.light {
+      --bg: #f0f2f8;
+      --surface: #ffffff;
+      --surface2: #e8ecf7;
+      --border: rgba(99,102,241,0.2);
+      --text: #111827;
+      --muted: #6b7280;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 24px 16px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent2);
+      letter-spacing: -0.5px;
+      padding: 0 8px 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+
+    .logo span { color: var(--text); }
+
+    .status-dot {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--success);
+      padding: 0 8px;
+      margin-bottom: 24px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .status-dot::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      background: var(--success);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .nav-section {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      padding: 0 8px;
+      margin-bottom: 8px;
+      margin-top: 4px;
+    }
+
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+      margin-bottom: 2px;
+    }
+
+    .sidebar a:hover,
+    .sidebar a.active {
+      background: rgba(99,102,241,0.12);
+      color: var(--accent2);
+    }
+
+    .sidebar a i {
+      width: 16px;
+      text-align: center;
+      font-size: 13px;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .sidebar-footer a {
+      color: var(--danger);
+      font-size: 13px;
+    }
+
+    .sidebar-footer a:hover {
+      background: rgba(239,68,68,0.1);
+      color: var(--danger);
+    }
+
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 28px 32px;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .topbar-left h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .topbar-left p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .time-chip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent2);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .icon-btn:hover {
+      color: var(--accent2);
+      border-color: var(--accent);
+    }
+
+    .alert-banner {
+      background: linear-gradient(135deg, rgba(239,68,68,0.15), rgba(245,158,11,0.1));
+      border: 1px solid rgba(239,68,68,0.3);
+      border-radius: 10px;
+      padding: 12px 18px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      flex-wrap: wrap;
+    }
+
+    .alert-banner i { color: var(--danger); font-size: 15px; }
+    .alert-banner strong { color: var(--danger); }
+
+    .alert-banner .close-alert {
+      margin-left: auto;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 12px;
+      padding: 2px 8px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      transition: 0.2s;
+    }
+
+    .alert-banner .close-alert:hover { color: var(--text); }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+    }
+
+    .stat-card.indigo::before { background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+    .stat-card.green::before { background: linear-gradient(90deg, #10b981, #34d399); }
+    .stat-card.yellow::before { background: linear-gradient(90deg, #f59e0b, #fcd34d); }
+    .stat-card.red::before { background: linear-gradient(90deg, #ef4444, #f87171); }
+
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+    }
+
+    .stat-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .stat-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .stat-icon.indigo { background: rgba(99,102,241,0.15); color: var(--accent2); }
+    .stat-icon.green { background: rgba(16,185,129,0.15); color: #10b981; }
+    .stat-icon.yellow { background: rgba(245,158,11,0.15); color: #f59e0b; }
+    .stat-icon.red { background: rgba(239,68,68,0.15); color: #ef4444; }
+
+    .stat-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 34px;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat-sub { font-size: 12px; color: var(--muted); }
+    .stat-sub .up { color: var(--success); font-weight: 600; }
+    .stat-sub .down { color: var(--danger); font-weight: 600; }
+
+    .charts-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .chart-title { font-size: 14px; font-weight: 600; }
+
+    .chart-badge {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 12px;
+      background: rgba(99,102,241,0.15);
+      color: var(--accent2);
+      font-weight: 600;
+    }
+
+    .bottom-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .panel-title { font-size: 14px; font-weight: 600; }
+
+    .feed { list-style: none; }
+
+    .feed li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-10px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .feed li:last-child { border-bottom: none; }
+
+    .feed-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .feed-time {
+      margin-left: auto;
+      font-size: 11px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .stock-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .stock-table th {
+      text-align: left;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--muted);
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stock-table td {
+      padding: 9px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stock-table tr:last-child td { border-bottom: none; }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .badge.critical { background: rgba(239,68,68,0.15); color: #ef4444; }
+    .badge.low { background: rgba(245,158,11,0.15); color: #f59e0b; }
+    .badge.ok { background: rgba(16,185,129,0.15); color: #10b981; }
+
+    @media (max-width: 1100px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .charts-row { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 700px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; padding: 16px; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .bottom-row { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 520px) {
+      .stats-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body id="body">
+
+<div class="sidebar">
+  <div class="logo">Inventory<span>Pro</span></div>
+  <div class="status-dot">System Active</div>
+
+  <div class="nav-section">Main</div>
+  <a href="{% url 'dashboard' %}" class="active"><i class="fas fa-gauge-high"></i> Dashboard</a>
+  <a href="{% url 'products' %}"><i class="fas fa-boxes-stacked"></i> Products</a>
+  <a href="{% url 'orders' %}"><i class="fas fa-cart-shopping"></i> Orders</a>
+  <a href="#" style="opacity:0.4;cursor:not-allowed;"><i class="fas fa-truck"></i> Suppliers</a>
+
+  <div class="nav-section" style="margin-top:16px;">Reports</div>
+  <a href="#" style="opacity:0.4;cursor:not-allowed;"><i class="fas fa-chart-bar"></i> Analytics</a>
+  <a href="#" style="opacity:0.4;cursor:not-allowed;"><i class="fas fa-file-export"></i> Export CSV</a>
+
+  <div class="nav-section" style="margin-top:16px;">Settings</div>
+  <a href="{% url 'about' %}"><i class="fas fa-circle-info"></i> About</a>
+  <a href="{% url 'contact' %}"><i class="fas fa-envelope"></i> Contact</a>
+  <a href="{% url 'analytics' %}"><i class="fas fa-chart-bar"></i> Analytics</a>
+  <a href="{% url 'export_csv' %}"><i class="fas fa-file-export"></i> Export CSV</a>
+
+  <div class="sidebar-footer">
+    <a href="{% url 'logout' %}"><i class="fas fa-right-from-bracket"></i> Logout</a>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <h1>Dashboard</h1>
+      <p id="greeting">Good morning — here's what's happening today.</p>
+    </div>
+    <div class="topbar-right">
+      <div class="time-chip" id="time">00:00:00</div>
+      <button class="icon-btn" onclick="toggleMode()" title="Toggle theme" id="modeBtn" type="button">
+        <i class="fas fa-moon"></i>
+      </button>
+      <button class="icon-btn" title="Notifications" type="button" style="position:relative;">
+        <i class="fas fa-bell"></i>
+        <span style="position:absolute;top:4px;right:4px;width:7px;height:7px;background:var(--danger);border-radius:50%;"></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="alert-banner" id="alertBanner">
+    <i class="fas fa-triangle-exclamation"></i>
+    <div><strong>3 items</strong> are critically low on stock — reorder needed before end of week.</div>
+    <span class="close-alert" onclick="document.getElementById('alertBanner').style.display='none'">Dismiss</span>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card indigo">
+      <div class="stat-top">
+        <span class="stat-label">Total Products</span>
+        <span class="stat-icon indigo"><i class="fas fa-box"></i></span>
+      </div>
+      <div class="stat-value">{{ products|length|default:"148" }}</div>
+      <div class="stat-sub"><span class="up">↑ 12</span> added this month</div>
+    </div>
+
+    <div class="stat-card green">
+      <div class="stat-top">
+        <span class="stat-label">Orders</span>
+        <span class="stat-icon green"><i class="fas fa-cart-shopping"></i></span>
+      </div>
+      <div class="stat-value">{{ orders|length|default:"64" }}</div>
+      <div class="stat-sub"><span class="up">↑ 8%</span> vs last week</div>
+    </div>
+
+    <div class="stat-card yellow">
+      <div class="stat-top">
+        <span class="stat-label">Low Stock</span>
+        <span class="stat-icon yellow"><i class="fas fa-triangle-exclamation"></i></span>
+      </div>
+      <div class="stat-value">{{ low_stock|length|default:"3" }}</div>
+      <div class="stat-sub"><span class="down">↓ needs reorder</span></div>
+    </div>
+
+    <div class="stat-card red">
+      <div class="stat-top">
+        <span class="stat-label">Out of Stock</span>
+        <span class="stat-icon red"><i class="fas fa-ban"></i></span>
+      </div>
+      <div class="stat-value">{{ out_of_stock|length|default:"2" }}</div>
+      <div class="stat-sub"><span class="down">↓ action required</span></div>
+    </div>
+  </div>
+
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Stock Levels by Category</span>
+        <span class="chart-badge">Live</span>
+      </div>
+      <canvas id="stockChart" height="110"></canvas>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Category Split</span>
+      </div>
+      <canvas id="categoryChart" height="160"></canvas>
+    </div>
+  </div>
+
+  <div class="bottom-row">
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Live Activity</span>
+        <span class="chart-badge">Auto-refresh</span>
+      </div>
+      <ul class="feed" id="activity">
+        <li>
+          <span class="feed-dot" style="background:var(--success)"></span>
+          System started
+          <span class="feed-time">just now</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Low Stock Items</span>
+        <a href="{% url 'products' %}" style="font-size:12px;color:var(--accent2);text-decoration:none;">View All →</a>
+      </div>
+      <table class="stock-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in low_stock %}
+          <tr>
+            <td>{{ item.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>
+              <span class="badge {% if item.quantity <= 5 %}critical{% else %}low{% endif %}">
+                {% if item.quantity <= 5 %}Critical{% else %}Low{% endif %}
+              </span>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td>USB-C Cables</td>
+            <td>4</td>
+            <td><span class="badge critical">Critical</span></td>
+          </tr>
+          <tr>
+            <td>Wireless Mouse</td>
+            <td>9</td>
+            <td><span class="badge low">Low</span></td>
+          </tr>
+          <tr>
+            <td>HDMI Adapters</td>
+            <td>6</td>
+            <td><span class="badge critical">Critical</span></td>
+          </tr>
+          <tr>
+            <td>Laptop Stands</td>
+            <td>14</td>
+            <td><span class="badge low">Low</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  function updateTime() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2, '0');
+    const m = String(now.getMinutes()).padStart(2, '0');
+    const s = String(now.getSeconds()).padStart(2, '0');
+    document.getElementById('time').innerText = `${h}:${m}:${s}`;
+    const hour = now.getHours();
+    const greet = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+    document.getElementById('greeting').innerText = `${greet} — here's what's happening today.`;
+  }
+  setInterval(updateTime, 1000);
+  updateTime();
+
+  let isDark = true;
+  function toggleMode() {
+    isDark = !isDark;
+    document.getElementById('body').classList.toggle('light', !isDark);
+    document.querySelector('#modeBtn i').className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+    updateChartColors();
+  }
+
+  function getChartColors() {
+    return isDark
+      ? { grid: 'rgba(255,255,255,0.05)', text: '#64748b' }
+      : { grid: 'rgba(0,0,0,0.06)', text: '#9ca3af' };
+  }
+
+  const stockChart = new Chart(document.getElementById('stockChart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: ['Electronics', 'Cables', 'Peripherals', 'Storage', 'Displays', 'Accessories'],
+      datasets: [{
+        label: 'Units in Stock',
+        data: [82, 14, 45, 67, 23, 91],
+        backgroundColor: [
+          'rgba(99,102,241,0.7)',
+          'rgba(239,68,68,0.7)',
+          'rgba(16,185,129,0.7)',
+          'rgba(99,102,241,0.7)',
+          'rgba(245,158,11,0.7)',
+          'rgba(16,185,129,0.7)'
+        ],
+        borderRadius: 6,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.raw} units`
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: getChartColors().grid },
+          ticks: { color: getChartColors().text, font: { size: 11 } }
+        },
+        y: {
+          grid: { color: getChartColors().grid },
+          ticks: { color: getChartColors().text, font: { size: 11 } }
+        }
+      }
+    }
+  });
+
+  const categoryChart = new Chart(document.getElementById('categoryChart').getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Electronics', 'Cables', 'Peripherals', 'Storage', 'Other'],
+      datasets: [{
+        data: [35, 20, 18, 15, 12],
+        backgroundColor: ['#6366f1', '#10b981', '#f59e0b', '#3b82f6', '#8b5cf6'],
+        borderWidth: 0,
+        hoverOffset: 6
+      }]
+    },
+    options: {
+      cutout: '70%',
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            color: getChartColors().text,
+            font: { size: 11 },
+            padding: 12,
+            boxWidth: 10
+          }
+        }
+      }
+    }
+  });
+
+  function updateChartColors() {
+    const c = getChartColors();
+    [stockChart, categoryChart].forEach(ch => {
+      if (ch.options.scales?.x) {
+        ch.options.scales.x.grid.color = c.grid;
+        ch.options.scales.x.ticks.color = c.text;
+        ch.options.scales.y.grid.color = c.grid;
+        ch.options.scales.y.ticks.color = c.text;
+      }
+      if (ch.options.plugins?.legend?.labels) {
+        ch.options.plugins.legend.labels.color = c.text;
+      }
+      ch.update();
+    });
+  }
+
+  const feedItems = [
+    { text: 'Order #1042 placed', color: 'var(--success)' },
+    { text: 'USB-C Cables — stock low', color: 'var(--warning)' },
+    { text: 'Webcam x3 added to inventory', color: 'var(--accent2)' },
+    { text: 'Order #1041 fulfilled', color: 'var(--success)' },
+    { text: 'HDMI Adapters — critical', color: 'var(--danger)' },
+    { text: 'Stock check completed', color: 'var(--accent2)' },
+    { text: 'New supplier contact added', color: 'var(--success)' }
+  ];
+
+  let feedCounter = 0;
+
+  function getTime() {
+    const now = new Date();
+    return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  setInterval(() => {
+    const list = document.getElementById('activity');
+    const item = feedItems[feedCounter % feedItems.length];
+    feedCounter++;
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="feed-dot" style="background:${item.color}"></span>${item.text}<span class="feed-time">${getTime()}</span>`;
+    list.prepend(li);
+    if (list.children.length > 6) {
+      list.removeChild(list.lastChild);
+    }
+  }, 3000);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,553 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+  .about-wrapper {
+    padding: 28px 32px;
+    min-height: 100vh;
+    background: linear-gradient(180deg, rgba(99,102,241,0.04), rgba(99,102,241,0.01));
+  }
+
+  .about-hero {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 20px;
+    margin-bottom: 22px;
+  }
+
+  .about-card,
+  .info-card,
+  .feature-card,
+  .timeline-card,
+  .team-card,
+  .stat-card {
+    background: var(--surface, #111827);
+    border: 1px solid var(--border, rgba(99,102,241,0.15));
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+  }
+
+  .about-card {
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .about-card::after {
+    content: "";
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    top: -40px;
+    right: -50px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(99,102,241,0.25), transparent 65%);
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent2, #818cf8);
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+
+  .eyebrow i {
+    font-size: 11px;
+  }
+
+  .about-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 34px;
+    line-height: 1.1;
+    font-weight: 700;
+    color: var(--text, #f1f5f9);
+    margin-bottom: 14px;
+    max-width: 14ch;
+  }
+
+  .about-text {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--muted, #94a3b8);
+    max-width: 62ch;
+  }
+
+  .hero-visual {
+    padding: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 280px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .graphic-shell {
+    width: 100%;
+    max-width: 360px;
+    aspect-ratio: 1 / 1;
+    border-radius: 24px;
+    background:
+      linear-gradient(135deg, rgba(99,102,241,0.18), rgba(16,185,129,0.12)),
+      var(--surface2, #1a2235);
+    border: 1px solid rgba(129,140,248,0.18);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .graphic-shell::before,
+  .graphic-shell::after {
+    content: "";
+    position: absolute;
+    border-radius: 18px;
+  }
+
+  .graphic-shell::before {
+    width: 72%;
+    height: 72%;
+    border: 1px dashed rgba(129,140,248,0.35);
+  }
+
+  .graphic-shell::after {
+    width: 46%;
+    height: 46%;
+    background: radial-gradient(circle, rgba(129,140,248,0.35), rgba(99,102,241,0.08));
+    box-shadow: 0 0 40px rgba(99,102,241,0.18);
+  }
+
+  .center-icon {
+    position: absolute;
+    z-index: 2;
+    width: 78px;
+    height: 78px;
+    border-radius: 20px;
+    background: rgba(99,102,241,0.16);
+    border: 1px solid rgba(129,140,248,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent2, #818cf8);
+    font-size: 30px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  }
+
+  .floating-chip {
+    position: absolute;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: var(--surface, #111827);
+    border: 1px solid var(--border, rgba(99,102,241,0.15));
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text, #f1f5f9);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+  }
+
+  .chip-1 { top: 18px; left: 16px; }
+  .chip-2 { top: 32px; right: 14px; }
+  .chip-3 { bottom: 24px; left: 20px; }
+  .chip-4 { bottom: 18px; right: 16px; }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 22px;
+  }
+
+  .stat-card {
+    padding: 20px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted, #94a3b8);
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .stat-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--text, #f1f5f9);
+  }
+
+  .stat-sub {
+    font-size: 12px;
+    color: var(--muted, #94a3b8);
+    margin-top: 6px;
+  }
+
+  .about-sections {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 20px;
+    margin-bottom: 22px;
+  }
+
+  .info-card,
+  .timeline-card,
+  .team-card {
+    padding: 24px;
+  }
+
+  .section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text, #f1f5f9);
+    margin-bottom: 14px;
+  }
+
+  .section-text {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--muted, #94a3b8);
+  }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 18px;
+  }
+
+  .feature-card {
+    padding: 18px;
+  }
+
+  .feature-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    background: rgba(99,102,241,0.14);
+    color: var(--accent2, #818cf8);
+    font-size: 16px;
+  }
+
+  .feature-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text, #f1f5f9);
+    margin-bottom: 8px;
+  }
+
+  .feature-desc {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--muted, #94a3b8);
+  }
+
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 10px;
+  }
+
+  .timeline-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .timeline-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-top: 5px;
+    background: linear-gradient(135deg, #6366f1, #818cf8);
+    box-shadow: 0 0 0 5px rgba(99,102,241,0.10);
+    flex-shrink: 0;
+  }
+
+  .timeline-item h4 {
+    font-size: 14px;
+    color: var(--text, #f1f5f9);
+    margin-bottom: 4px;
+  }
+
+  .timeline-item p {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--muted, #94a3b8);
+  }
+
+  .team-list {
+    display: grid;
+    gap: 14px;
+    margin-top: 14px;
+  }
+
+  .team-member {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 12px;
+    background: rgba(99,102,241,0.05);
+    border: 1px solid rgba(99,102,241,0.10);
+  }
+
+  .avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(99,102,241,0.25), rgba(16,185,129,0.20));
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .member-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text, #f1f5f9);
+  }
+
+  .member-role {
+    font-size: 12px;
+    color: var(--muted, #94a3b8);
+    margin-top: 3px;
+  }
+
+  .bottom-banner {
+    padding: 22px 24px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(16,185,129,0.08));
+    border: 1px solid rgba(99,102,241,0.16);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+
+  .bottom-banner h3 {
+    font-size: 18px;
+    color: var(--text, #f1f5f9);
+    margin-bottom: 6px;
+  }
+
+  .bottom-banner p {
+    font-size: 13px;
+    color: var(--muted, #94a3b8);
+    max-width: 60ch;
+  }
+
+  .bottom-badge {
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: rgba(99,102,241,0.16);
+    color: var(--accent2, #818cf8);
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 1100px) {
+    .about-hero,
+    .about-sections {
+      grid-template-columns: 1fr;
+    }
+
+    .stats-grid,
+    .feature-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 700px) {
+    .about-wrapper {
+      padding: 16px;
+    }
+
+    .stats-grid,
+    .feature-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .about-title {
+      font-size: 28px;
+    }
+
+    .hero-visual {
+      min-height: 240px;
+    }
+  }
+</style>
+
+<div class="about-wrapper">
+  <div class="about-hero">
+    <div class="about-card">
+      <div class="eyebrow">
+        <i class="fas fa-circle-nodes"></i>
+        About InventoryPro
+      </div>
+      <h1 class="about-title">Smart inventory control built for growing businesses.</h1>
+      <p class="about-text">
+        InventoryPro is a business-focused inventory management system created to simplify stock tracking,
+        product organization, order flow, and operational visibility in one clean dashboard.
+        It helps teams reduce stock errors, monitor movement faster, and make better day-to-day decisions.
+      </p>
+    </div>
+
+    <div class="hero-visual about-card">
+      <div class="graphic-shell">
+        <div class="floating-chip chip-1">Live Stock</div>
+        <div class="floating-chip chip-2">Orders</div>
+        <div class="floating-chip chip-3">Analytics</div>
+        <div class="floating-chip chip-4">Reports</div>
+        <div class="center-icon">
+          <i class="fas fa-boxes-stacked"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Core Modules</div>
+      <div class="stat-value">4</div>
+      <div class="stat-sub">Dashboard, products, orders, reports-ready</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Use Case</div>
+      <div class="stat-value">SMB</div>
+      <div class="stat-sub">Built for growing business operations</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Workflow Focus</div>
+      <div class="stat-value">24/7</div>
+      <div class="stat-sub">Track stock and movement anytime</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Project Type</div>
+      <div class="stat-value">Hack</div>
+      <div class="stat-sub">Hackathon-ready functional prototype</div>
+    </div>
+  </div>
+
+  <div class="about-sections">
+    <div class="info-card">
+      <h2 class="section-title">What this system does</h2>
+      <p class="section-text">
+        The platform is designed to centralize inventory operations for businesses that need a fast,
+        visual, and easy-to-use workspace. It supports stock visibility, product listing, order monitoring,
+        and a better overview of business activity without forcing users through a complex enterprise interface.
+      </p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+          <div class="feature-title">Dashboard Insights</div>
+          <div class="feature-desc">Quick access to stock alerts, business metrics, and operational summaries.</div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-box-open"></i></div>
+          <div class="feature-title">Product Control</div>
+          <div class="feature-desc">Manage product catalog, categories, stock levels, and availability clearly.</div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-cart-flatbed"></i></div>
+          <div class="feature-title">Order Tracking</div>
+          <div class="feature-desc">Follow order status from pending to delivered with a streamlined layout.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="timeline-card">
+      <h2 class="section-title">How it helps</h2>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div>
+            <h4>Reduces manual confusion</h4>
+            <p>Teams can quickly see what is in stock, what is low, and what needs attention.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div>
+            <h4>Improves visibility</h4>
+            <p>Managers get a cleaner view of inventory health and order movement from one place.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div>
+            <h4>Supports better decisions</h4>
+            <p>Data blocks and visual sections make day-to-day operations easier to understand.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="team-card">
+    <h2 class="section-title">Project identity</h2>
+    <p class="section-text">
+      This interface was created as a hackathon project with a modern business dashboard approach.
+      The design language is aligned with the dashboard, products, and orders pages so the whole system feels
+      like one connected application rather than separate screens.
+    </p>
+
+    <div class="team-list">
+      <div class="team-member">
+        <div class="avatar">IP</div>
+        <div>
+          <div class="member-name">InventoryPro Concept</div>
+          <div class="member-role">Business inventory management platform</div>
+        </div>
+      </div>
+
+      <div class="team-member">
+        <div class="avatar">UX</div>
+        <div>
+          <div class="member-name">Unified Interface</div>
+          <div class="member-role">Same visual language as dashboard, products, and orders</div>
+        </div>
+      </div>
+
+      <div class="team-member">
+        <div class="avatar">AI</div>
+        <div>
+          <div class="member-name">Smart Workflow Direction</div>
+          <div class="member-role">Focused on faster stock tracking and operational clarity</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-banner" style="margin-top: 22px;">
+    <div>
+      <h3>Built to keep business inventory simple and visible.</h3>
+      <p>
+        This page now follows the same card-based dark dashboard style so it visually fits your main system pages.
+      </p>
+    </div>
+    <div class="bottom-badge">InventoryPro v1</div>
+  </div>
+</div>
+{% endblock %}

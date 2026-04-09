@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>InventoryPro</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            display: flex;
+            background: #f4f6f9;
+        }
+
+        .sidebar {
+            width: 230px;
+            height: 100vh;
+            background: #111827;
+            color: white;
+            padding: 20px;
+        }
+
+        .sidebar h2 {
+            margin-bottom: 10px;
+        }
+
+        .status {
+            color: #22c55e;
+            margin-bottom: 20px;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 10px;
+            color: #9ca3af;
+            text-decoration: none;
+            margin-bottom: 10px;
+            border-radius: 6px;
+        }
+
+        .sidebar a:hover {
+            background: #1f2937;
+            color: white;
+        }
+
+        .main {
+            flex: 1;
+            padding: 30px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <h2>InventoryPro</h2>
+    <p class="status">● System Active</p>
+
+    <a href="/home/">🏠 Dashboard</a>
+    <a href="/about/">ℹ About</a>
+    <a href="/contact/">📞 Contact</a>
+    <a href="/admin/">⚙ Admin</a>
+</div>
+
+<!-- Dynamic Content -->
+<div class="main">
+    {% block content %}
+    {% endblock %}
+</div>
+
+</body>
+</html>

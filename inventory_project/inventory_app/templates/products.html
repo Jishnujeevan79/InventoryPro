@@ -1,0 +1,951 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products | InventoryPro</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0b0f1a;
+      --surface: #111827;
+      --surface2: #1a2235;
+      --border: rgba(99,102,241,0.15);
+      --accent: #6366f1;
+      --accent2: #818cf8;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text: #f1f5f9;
+      --muted: #64748b;
+      --sidebar-w: 240px;
+    }
+
+    body.light {
+      --bg: #f0f2f8;
+      --surface: #ffffff;
+      --surface2: #e8ecf7;
+      --border: rgba(99,102,241,0.2);
+      --text: #111827;
+      --muted: #6b7280;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 24px 16px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent2);
+      letter-spacing: -0.5px;
+      padding: 0 8px 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+
+    .logo span {
+      color: var(--text);
+    }
+
+    .status-dot {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--success);
+      padding: 0 8px;
+      margin-bottom: 24px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .status-dot::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      background: var(--success);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .nav-section {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      padding: 0 8px;
+      margin-bottom: 8px;
+      margin-top: 4px;
+    }
+
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+      margin-bottom: 2px;
+    }
+
+    .sidebar a:hover,
+    .sidebar a.active {
+      background: rgba(99,102,241,0.12);
+      color: var(--accent2);
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .sidebar-footer a {
+      color: var(--danger);
+    }
+
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 28px 32px;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .topbar-left h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+    }
+
+    .topbar-left p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .time-chip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent2);
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr auto auto;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .search-box,
+    .filter-box,
+    .btn,
+    .file-input {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 14px;
+      padding: 12px 14px;
+      outline: none;
+    }
+
+    .btn {
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+
+    .btn-primary {
+      background: rgba(99,102,241,0.15);
+      color: var(--accent2);
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+    }
+
+    .card-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .card-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 30px;
+      font-weight: 700;
+    }
+
+    .card-sub {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .table-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .table-header {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .table-header h2 {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th {
+      text-align: left;
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .product-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 220px;
+    }
+
+    .product-thumb {
+      width: 56px;
+      height: 56px;
+      min-width: 56px;
+      border-radius: 10px;
+      object-fit: contain;
+      object-position: center;
+      display: block;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      padding: 4px;
+      flex-shrink: 0;
+    }
+
+    .product-name {
+      font-weight: 600;
+    }
+
+    .sku {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .badge.ok {
+      background: rgba(16,185,129,0.15);
+      color: #10b981;
+    }
+
+    .badge.low {
+      background: rgba(245,158,11,0.15);
+      color: #f59e0b;
+    }
+
+    .badge.critical {
+      background: rgba(239,68,68,0.15);
+      color: #ef4444;
+    }
+
+    .action-links a {
+      color: var(--accent2);
+      text-decoration: none;
+      margin-right: 12px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .action-links a.delete {
+      color: var(--danger) !important;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal-content {
+      background: var(--surface);
+      margin: 4% auto;
+      padding: 24px;
+      border-radius: 14px;
+      width: 90%;
+      max-width: 560px;
+      border: 1px solid var(--border);
+      position: relative;
+    }
+
+    .close {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      color: var(--muted);
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface2);
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .image-upload-wrap {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .preview-box {
+      width: 110px;
+      height: 110px;
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .preview-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    @media (max-width: 1100px) {
+      .summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .toolbar {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .sidebar {
+        display: none;
+      }
+
+      .main {
+        margin-left: 0;
+        padding: 16px;
+      }
+
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+
+      .table-card {
+        overflow-x: auto;
+      }
+
+      table {
+        min-width: 980px;
+      }
+
+      .image-upload-wrap {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body id="body">
+
+<div class="sidebar">
+  <div class="logo">Inventory<span>Pro</span></div>
+  <div class="status-dot">System Active</div>
+
+  <div class="nav-section">Main</div>
+  <a href="{% url 'dashboard' %}"><i class="fas fa-gauge-high"></i> Dashboard</a>
+  <a href="{% url 'products' %}" class="active"><i class="fas fa-boxes-stacked"></i> Products</a>
+  <a href="{% url 'orders' %}"><i class="fas fa-cart-shopping"></i> Orders</a>
+
+  <div class="nav-section" style="margin-top:16px;">Settings</div>
+  <a href="{% url 'about' %}"><i class="fas fa-circle-info"></i> About</a>
+  <a href="{% url 'contact' %}"><i class="fas fa-envelope"></i> Contact</a>
+
+  <div class="sidebar-footer">
+    <a href="{% url 'logout' %}"><i class="fas fa-right-from-bracket"></i> Logout</a>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <h1>Products</h1>
+      <p>Manage inventory items, stock levels, and catalog status.</p>
+    </div>
+    <div class="topbar-right">
+      <div class="time-chip" id="time">00:00:00</div>
+      <button class="icon-btn" onclick="toggleMode()" id="modeBtn" type="button">
+        <i class="fas fa-moon"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <input class="search-box" id="searchInput" type="text" placeholder="Search products, SKU, category...">
+    <select class="filter-box">
+      <option>All Categories</option>
+      <option>Electronics</option>
+      <option>Cables</option>
+      <option>Accessories</option>
+      <option>Storage</option>
+    </select>
+    <button class="btn" type="button">Export</button>
+    <button class="btn btn-primary" type="button" onclick="openAddModal()">+ Add Product</button>
+  </div>
+
+  <div class="summary-grid">
+    <div class="card">
+      <div class="card-label">Total Products</div>
+      <div class="card-value" id="totalProducts">6</div>
+      <div class="card-sub">Across all categories</div>
+    </div>
+    <div class="card">
+      <div class="card-label">In Stock</div>
+      <div class="card-value">129</div>
+      <div class="card-sub">Available for orders</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Low Stock</div>
+      <div class="card-value">13</div>
+      <div class="card-sub">Needs restocking soon</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Out of Stock</div>
+      <div class="card-value">6</div>
+      <div class="card-sub">Immediate attention needed</div>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-header">
+      <h2>Product Inventory</h2>
+      <span style="color:var(--muted);font-size:13px;" id="lastUpdated">Updated just now</span>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Category</th>
+          <th>Price</th>
+          <th>Stock</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="productsTableBody">
+        <tr>
+          <td>
+            <div class="product-info">
+              <img class="product-thumb" src="{% static 'images/usb-c-cable.jpg' %}" alt="USB-C Cable" onerror="this.onerror=null; this.src='{% static 'images/default-product.jpg' %}';">
+              <div>
+                <div class="product-name">USB-C Cable</div>
+                <div class="sku">SKU: INV-1001</div>
+              </div>
+            </div>
+          </td>
+          <td>Cables</td>
+          <td>₹299</td>
+          <td>4</td>
+          <td><span class="badge critical">Critical</span></td>
+          <td class="action-links">
+            <a href="#" onclick="editProduct(this); return false;">Edit</a>
+            <a href="#" onclick="return deleteProduct(this);" class="delete">Delete</a>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <div class="product-info">
+              <img class="product-thumb" src="{% static 'images/wireless-mouse.jpg' %}" alt="Wireless Mouse" onerror="this.onerror=null; this.src='{% static 'images/default-product.jpg' %}';">
+              <div>
+                <div class="product-name">Wireless Mouse</div>
+                <div class="sku">SKU: INV-1002</div>
+              </div>
+            </div>
+          </td>
+          <td>Accessories</td>
+          <td>₹899</td>
+          <td>9</td>
+          <td><span class="badge low">Low</span></td>
+          <td class="action-links">
+            <a href="#" onclick="editProduct(this); return false;">Edit</a>
+            <a href="#" onclick="return deleteProduct(this);" class="delete">Delete</a>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <div class="product-info">
+              <img class="product-thumb" src="{% static 'images/laptop-stand.jpg' %}" alt="Laptop Stand" onerror="this.onerror=null; this.src='{% static 'images/default-product.jpg' %}';">
+              <div>
+                <div class="product-name">Laptop Stand</div>
+                <div class="sku">SKU: INV-1003</div>
+              </div>
+            </div>
+          </td>
+          <td>Accessories</td>
+          <td>₹1499</td>
+          <td>14</td>
+          <td><span class="badge low">Low</span></td>
+          <td class="action-links">
+            <a href="#" onclick="editProduct(this); return false;">Edit</a>
+            <a href="#" onclick="return deleteProduct(this);" class="delete">Delete</a>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <div class="product-info">
+              <img class="product-thumb" src="{% static 'images/portable-ssd.jpg' %}" alt="Portable SSD 1TB" onerror="this.onerror=null; this.src='{% static 'images/default-product.jpg' %}';">
+              <div>
+                <div class="product-name">Portable SSD 1TB</div>
+                <div class="sku">SKU: INV-1004</div>
+              </div>
+            </div>
+          </td>
+          <td>Storage</td>
+          <td>₹7499</td>
+          <td>21</td>
+          <td><span class="badge ok">Healthy</span></td>
+          <td class="action-links">
+            <a href="#" onclick="editProduct(this); return false;">Edit</a>
+            <a href="#" onclick="return deleteProduct(this);" class="delete">Delete</a>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <div class="product-info">
+              <img class="product-thumb" src="{% static 'images/mechanical-keyboard.jpg' %}" alt="Mechanical Keyboard" onerror="this.onerror=null; this.src='{% static 'images/default-product.jpg' %}';">
+              <div>
+                <div class="product-name">Mechanical Keyboard</div>
+                <div class="sku">SKU: INV-1005</div>
+              </div>
+            </div>
+          </td>
+          <td>Electronics</td>
+          <td>₹3499</td>
+          <td>32</td>
+          <td><span class="badge ok">Healthy</span></td>
+          <td class="action-links">
+            <a href="#" onclick="editProduct(this); return false;">Edit</a>
+            <a href="#" onclick="return deleteProduct(this);" class="delete">Delete</a>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <div class="product-info">
+              <img class="product-thumb" src="{% static 'images/hdmi-adapter.jpg' %}" alt="HDMI Adapter" onerror="this.onerror=null; this.src='{% static 'images/default-product.jpg' %}';">
+              <div>
+                <div class="product-name">HDMI Adapter</div>
+                <div class="sku">SKU: INV-1006</div>
+              </div>
+            </div>
+          </td>
+          <td>Cables</td>
+          <td>₹499</td>
+          <td>6</td>
+          <td><span class="badge critical">Critical</span></td>
+          <td class="action-links">
+            <a href="#" onclick="editProduct(this); return false;">Edit</a>
+            <a href="#" onclick="return deleteProduct(this);" class="delete">Delete</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div id="editModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h2 id="modalTitle">Edit Product</h2>
+
+    <form id="editForm" enctype="multipart/form-data">
+      <div class="form-group">
+        <label>Product Image</label>
+        <div class="image-upload-wrap">
+          <div class="preview-box">
+            <img id="imagePreview" src="{% static 'images/default-product.jpg' %}" alt="Preview" onerror="this.onerror=null; this.src='{% static 'images/default-product.jpg' %}';">
+          </div>
+          <div>
+            <input class="file-input" type="file" id="editImage" accept="image/*">
+            <div style="font-size:12px;color:var(--muted);margin-top:8px;">
+              Choose JPG, PNG, or WebP image. Selected image will preview instantly.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Product Name</label>
+        <input type="text" id="editName" required>
+      </div>
+
+      <div class="form-group">
+        <label>SKU</label>
+        <input type="text" id="editSKU" required>
+      </div>
+
+      <div class="form-group">
+        <label>Category</label>
+        <select id="editCategory" required>
+          <option>Electronics</option>
+          <option>Cables</option>
+          <option>Accessories</option>
+          <option>Storage</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Price</label>
+        <input type="text" id="editPrice" required>
+      </div>
+
+      <div class="form-group">
+        <label>Stock</label>
+        <input type="number" id="editStock" min="0" required>
+      </div>
+
+      <div style="display: flex; gap: 12px;">
+        <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  let currentEditingRow = null;
+  const defaultProductImage = "{% static 'images/default-product.jpg' %}";
+
+  function updateTime() {
+    const now = new Date();
+    document.getElementById('time').innerText = now.toLocaleTimeString();
+  }
+  setInterval(updateTime, 1000);
+  updateTime();
+
+  let isDark = true;
+  function toggleMode() {
+    isDark = !isDark;
+    document.getElementById('body').classList.toggle('light', !isDark);
+    document.querySelector('#modeBtn i').className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+  }
+
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.addEventListener('input', function () {
+      const searchValue = this.value.toLowerCase().trim();
+      document.querySelectorAll('#productsTableBody tr').forEach(row => {
+        const rowText = row.textContent.toLowerCase();
+        row.style.display = rowText.includes(searchValue) ? '' : 'none';
+      });
+    });
+  }
+
+  function deleteProduct(link) {
+    const row = link.closest('tr');
+    const productName = row.querySelector('.product-name').innerText.trim();
+
+    const confirmed = confirm('Are you sure you want to delete "' + productName + '"? This action cannot be undone.');
+    if (!confirmed) {
+      return false;
+    }
+
+    row.remove();
+    updateSummaryCards();
+    updateLastUpdated();
+    return false;
+  }
+
+  function editProduct(link) {
+    const row = link.closest('tr');
+    currentEditingRow = row;
+
+    const imageSrc = row.querySelector('.product-thumb').getAttribute('src');
+    const name = row.querySelector('.product-name').innerText;
+    const sku = row.querySelector('.sku').innerText.replace('SKU: ', '');
+    const category = row.cells[1].innerText;
+    const price = row.cells[2].innerText;
+    const stock = row.cells[3].innerText;
+
+    document.getElementById('imagePreview').src = imageSrc || defaultProductImage;
+    document.getElementById('editImage').value = '';
+    document.getElementById('editName').value = name;
+    document.getElementById('editSKU').value = sku;
+    document.getElementById('editCategory').value = category;
+    document.getElementById('editPrice').value = price;
+    document.getElementById('editStock').value = stock;
+    document.getElementById('modalTitle').innerText = 'Edit Product';
+    document.getElementById('editModal').style.display = 'block';
+  }
+
+  function openAddModal() {
+    currentEditingRow = null;
+    document.getElementById('editForm').reset();
+    document.getElementById('imagePreview').src = defaultProductImage;
+    document.getElementById('modalTitle').innerText = 'Add New Product';
+    document.getElementById('editModal').style.display = 'block';
+  }
+
+  function closeModal() {
+    document.getElementById('editModal').style.display = 'none';
+  }
+
+  window.onclick = function(event) {
+    const modal = document.getElementById('editModal');
+    if (event.target == modal) {
+      closeModal();
+    }
+  }
+
+  document.getElementById('editImage').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('imagePreview').src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  document.getElementById('editForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const previewSrc = document.getElementById('imagePreview').src || defaultProductImage;
+    const name = document.getElementById('editName').value;
+    const sku = document.getElementById('editSKU').value;
+    const category = document.getElementById('editCategory').value;
+    const price = document.getElementById('editPrice').value;
+    const stock = document.getElementById('editStock').value;
+
+    let statusClass = 'ok';
+    let statusText = 'Healthy';
+    const stockNum = parseInt(stock, 10);
+
+    if (stockNum <= 6) {
+      statusClass = 'critical';
+      statusText = 'Critical';
+    } else if (stockNum <= 15) {
+      statusClass = 'low';
+      statusText = 'Low';
+    }
+
+    if (currentEditingRow) {
+      currentEditingRow.querySelector('.product-thumb').src = previewSrc;
+      currentEditingRow.querySelector('.product-thumb').alt = name;
+      currentEditingRow.querySelector('.product-name').innerText = name;
+      currentEditingRow.querySelector('.sku').innerText = 'SKU: ' + sku;
+      currentEditingRow.cells[1].innerText = category;
+      currentEditingRow.cells[2].innerText = price;
+      currentEditingRow.cells[3].innerText = stock;
+      currentEditingRow.cells[4].innerHTML = '<span class="badge ' + statusClass + '">' + statusText + '</span>';
+      alert('Product updated successfully.');
+    } else {
+      const tbody = document.getElementById('productsTableBody');
+      const newRow = document.createElement('tr');
+      newRow.innerHTML = `
+        <td>
+          <div class="product-info">
+            <img class="product-thumb" src="${previewSrc}" alt="${name}" onerror="this.onerror=null; this.src='${defaultProductImage}';">
+            <div>
+              <div class="product-name">${name}</div>
+              <div class="sku">SKU: ${sku}</div>
+            </div>
+          </div>
+        </td>
+        <td>${category}</td>
+        <td>${price}</td>
+        <td>${stock}</td>
+        <td><span class="badge ${statusClass}">${statusText}</span></td>
+        <td class="action-links">
+          <a href="#" onclick="editProduct(this); return false;">Edit</a>
+          <a href="#" onclick="return deleteProduct(this);" class="delete">Delete</a>
+        </td>
+      `;
+      tbody.appendChild(newRow);
+      alert('Product added successfully.');
+    }
+
+    updateSummaryCards();
+    updateLastUpdated();
+    closeModal();
+  });
+
+  function updateSummaryCards() {
+    const rows = document.querySelectorAll('#productsTableBody tr');
+    document.getElementById('totalProducts').innerText = rows.length;
+  }
+
+  function updateLastUpdated() {
+    document.getElementById('lastUpdated').innerText = 'Updated just now';
+  }
+
+  updateSummaryCards();
+</script>
+
+</body>
+</html>

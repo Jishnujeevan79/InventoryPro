@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="mode-toggle">
+    <label class="switch">
+        <input type="checkbox" id="modeSwitch">
+        <span class="slider round"></span>
+    </label>
+    <span id="modeLabel">Light Mode</span>
+</div>
+
+<div class="contact-wrapper">
+    <div class="background-shapes">
+        <span class="shape shape1"></span>
+        <span class="shape shape2"></span>
+        <span class="shape shape3"></span>
+    </div>
+
+    <div class="contact-container slide-in">
+        <h1>Contact Us</h1>
+        <p>We’d love to hear from you. Send us a message!</p>
+
+        {% if success %}
+            <div class="alert success">✅ Your message was sent successfully!</div>
+        {% endif %}
+        {% if error %}
+            <div class="alert error">⚠️ {{ error }}</div>
+        {% endif %}
+
+        <form method="POST" class="contact-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <input type="text" name="name" required value="{{ name_value|default:'' }}" placeholder=" ">
+                <label>Your Name</label>
+            </div>
+
+            <div class="form-group">
+                <input type="email" name="email" required value="{{ email_value|default:'' }}" placeholder=" ">
+                <label>Email Address</label>
+            </div>
+
+            <div class="form-group">
+                <textarea name="message" required placeholder=" ">{{ message_value|default:'' }}</textarea>
+                <label>Your Message</label>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn submit-btn">Send Message</button>
+                <button type="reset" class="btn reset-btn">Clear</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+/* Light / Dark mode variables */
+:root {
+    --bg-light: #f5f5f5;
+    --bg-dark: #121212;
+    --card-light: #ffffff;
+    --card-dark: #1e1e1e;
+    --text-light: #222;
+    --text-dark: #eee;
+    --accent-light: #4CAF50;
+    --accent-dark: #0ff;
+    --error-light: #f44336;
+    --error-dark: #ff5555;
+}
+
+/* Mode toggle */
+.mode-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 15px 20px;
+    gap: 10px;
+}
+#modeLabel {
+    font-weight: bold;
+}
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+.switch input { display: none; }
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 24px;
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px; width: 18px;
+    left: 3px; bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+input:checked + .slider { background-color: var(--accent-light); }
+input:checked + .slider:before { transform: translateX(26px); }
+
+/* Wrapper & shapes */
+.contact-wrapper {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+    position: relative;
+    padding: 20px;
+}
+.background-shapes .shape {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.15;
+    animation: float 6s infinite ease-in-out alternate;
+}
+.shape1 { width: 150px; height: 150px; background: #4CAF50; top: -50px; left: -30px; }
+.shape2 { width: 100px; height: 100px; background: #f44336; bottom: 20px; right: -40px; }
+.shape3 { width: 120px; height: 120px; background: #2196F3; top: 120px; right: 50px; }
+
+@keyframes float {
+    0% { transform: translateY(0) translateX(0) rotate(0deg); }
+    50% { transform: translateY(-20px) translateX(10px) rotate(10deg); }
+    100% { transform: translateY(0) translateX(0) rotate(0deg); }
+}
+
+/* Container */
+.contact-container {
+    background: var(--card-light);
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeSlide 0.6s forwards;
+    position: relative;
+    z-index: 2;
+}
+
+/* Headings */
+.contact-container h1 { text-align:center; color: var(--text-light); margin-bottom: 8px; }
+.contact-container p { text-align:center; color: #555; margin-bottom: 30px; }
+
+/* Alerts */
+.alert { padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align:center; font-weight:bold; animation: pop 0.4s ease; }
+.alert.success { background: #d4edda; color: #155724; }
+.alert.error { background: #f8d7da; color: #721c24; }
+
+/* Form */
+.contact-form .form-group { position: relative; margin-bottom: 25px; }
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: 16px 16px 16px 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    outline: none;
+    background: transparent;
+    transition: 0.3s all;
+}
+.contact-form input:focus,
+.contact-form textarea:focus {
+    border-color: var(--accent-light);
+    box-shadow: 0 0 12px rgba(76, 175, 80, 0.3);
+}
+.contact-form label {
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    transform: translateY(-50%);
+    color: #aaa;
+    font-size: 16px;
+    pointer-events: none;
+    transition: 0.3s all;
+    background: var(--card-light);
+    padding: 0 4px;
+}
+.contact-form input:focus + label,
+.contact-form input:not(:placeholder-shown) + label,
+.contact-form textarea:focus + label,
+.contact-form textarea:not(:placeholder-shown) + label {
+    top: -10px;
+    font-size: 12px;
+    color: var(--accent-light);
+}
+
+/* Buttons */
+.button-group { display: flex; gap: 15px; flex-wrap: wrap; }
+.btn { flex:1; padding:16px; border:none; border-radius:10px; font-size:16px; font-weight:bold; cursor:pointer; transition:.3s all; color:#fff; }
+.submit-btn { background: var(--accent-light); }
+.submit-btn:hover { transform: translateY(-3px); box-shadow:0 8px 20px rgba(76,175,80,0.4); }
+.reset-btn { background: var(--error-light); }
+.reset-btn:hover { transform: translateY(-3px); box-shadow:0 8px 20px rgba(244,67,54,0.4); }
+
+/* Animations */
+@keyframes fadeSlide { to { opacity:1; transform: translateY(0); } }
+@keyframes pop { 0% { transform: scale(0.8); opacity:0; } 100% { transform: scale(1); opacity:1; } }
+
+/* Responsive */
+@media (max-width:500px) { .button-group { flex-direction: column; } }
+</style>
+
+<script>
+const modeSwitch = document.getElementById('modeSwitch');
+const contactContainer = document.querySelector('.contact-container');
+const modeLabel = document.getElementById('modeLabel');
+
+modeSwitch.addEventListener('change', function() {
+    if(this.checked){
+        document.body.style.background = '#121212';
+        contactContainer.style.background = '#1e1e1e';
+        document.body.style.color = '#eee';
+        modeLabel.textContent = "Dark Mode";
+        document.documentElement.style.setProperty('--accent-light','#0ff');
+        document.documentElement.style.setProperty('--error-light','#ff5555');
+    } else {
+        document.body.style.background = '#f5f5f5';
+        contactContainer.style.background = '#fff';
+        document.body.style.color = '#222';
+        modeLabel.textContent = "Light Mode";
+        document.documentElement.style.setProperty('--accent-light','#4CAF50');
+        document.documentElement.style.setProperty('--error-light','#f44336');
+    }
+});
+</script>
+{% endblock %}
